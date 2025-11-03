@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Calculator - Last War</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .result-value {
+            color: #333;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .time-value {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🧬</div>
+        <h1>Protein Calculator</h1>
+        <p class="subtitle">Last War - Saison 1</p>
+
+        <div class="input-group">
+            <label for="currentProteins">Current Proteins:</label>
+            <input type="number" id="currentProteins" placeholder="e.g. 1500" min="0" step="1">
+        </div>
+
+        <div class="input-group">
+            <label for="requiredProteins">Proteins Required for Upgrade:</label>
+            <input type="number" id="requiredProteins" placeholder="e.g. 5000" min="0" step="1">
+        </div>
+
+        <div class="input-group">
+            <label for="productionRate">Production per Hour:</label>
+            <input type="number" id="productionRate" placeholder="e.g. 250" min="0" step="0.1">
+        </div>
+
+        <button onclick="calculateUpgradeTime()">🚀 Calculate</button>
+
+        <div id="result" class="result">
+            <h2>📊 Result</h2>
+            <div class="result-item">
+                <span class="result-label">Missing Proteins:</span>
+                <span class="result-value" id="missingProteins">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Wait Time:</span>
+                <span class="result-value" id="waitTime">-</span>
+            </div>
+            <div class="result-item" style="flex-direction: column; gap: 10px; text-align: center;">
+                <span class="result-label">Upgrade Available At:</span>
+                <span class="time-value" id="upgradeTime">-</span>
+            </div>
+        </div>
+
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        function calculateUpgradeTime() {
+            // Récupération des valeurs
+            const currentProteins = parseFloat(document.getElementById('currentProteins').value);
+            const requiredProteins = parseFloat(document.getElementById('requiredProteins').value);
+            const productionRate = parseFloat(document.getElementById('productionRate').value);
+
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+
+            // Réinitialiser les messages d'erreur
+            errorDiv.textContent = '';
+            resultDiv.classList.remove('show');
+
+            // Validation des entrées
+            if (isNaN(currentProteins) || isNaN(requiredProteins) || isNaN(productionRate)) {
+                errorDiv.textContent = '⚠️ Please fill in all fields';
+                return;
+            }
+
+            if (currentProteins < 0 || requiredProteins < 0 || productionRate < 0) {
+                errorDiv.textContent = '⚠️ Values must be positive';
+                return;
+            }
+
+            if (productionRate === 0) {
+                errorDiv.textContent = '⚠️ Production per hour must be greater than 0';
+                return;
+            }
+
+            // Vérifier si on a déjà assez de protéines
+            if (currentProteins >= requiredProteins) {
+                errorDiv.textContent = '✅ You already have enough proteins for the upgrade!';
+                errorDiv.style.color = '#27ae60';
+                return;
+            }
+
+            // Calculs
+            const missingProteins = requiredProteins - currentProteins;
+            const hoursNeeded = missingProteins / productionRate;
+            const minutesNeeded = hoursNeeded * 60;
+
+            // Calcul de l'heure d'upgrade
+            const now = new Date();
+            const upgradeDate = new Date(now.getTime() + (minutesNeeded * 60 * 1000));
+
+            // Formatage du temps d'attente
+            const days = Math.floor(hoursNeeded / 24);
+            const hours = Math.floor(hoursNeeded % 24);
+            const minutes = Math.floor((hoursNeeded * 60) % 60);
+
+            let waitTimeText = '';
+            if (days > 0) {
+                waitTimeText += `${days} day${days > 1 ? 's' : ''} `;
+            }
+            if (hours > 0 || days > 0) {
+                waitTimeText += `${hours} hour${hours > 1 ? 's' : ''} `;
+            }
+            waitTimeText += `${minutes} minute${minutes > 1 ? 's' : ''}`;
+
+            // Formatage de l'heure d'upgrade
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const upgradeTimeText = upgradeDate.toLocaleDateString('en-US', options);
+
+            // Affichage des résultats
+            document.getElementById('missingProteins').textContent = Math.ceil(missingProteins).toLocaleString('en-US');
+            document.getElementById('waitTime').textContent = waitTimeText;
+            document.getElementById('upgradeTime').textContent = upgradeTimeText;
+
+            resultDiv.classList.add('show');
+        }
+
+        // Permettre le calcul avec la touche Entrée
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    calculateUpgradeTime();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
