@@ -202,6 +202,10 @@
                 <span class="result-label">Wait Time:</span>
                 <span class="result-value" id="waitTime">-</span>
             </div>
+            <div class="result-item" id="countdownContainer" style="display: none;">
+                <span class="result-label">Time Remaining:</span>
+                <span class="result-value" id="countdown" style="color: #f5576c; font-weight: 700;">-</span>
+            </div>
             <div class="result-item" style="flex-direction: column; gap: 10px; text-align: center;">
                 <span class="result-label">Upgrade Available At:</span>
                 <span class="time-value" id="upgradeTime">-</span>
@@ -214,6 +218,7 @@
     <script>
         let notificationTimeout = null;
         let upgradeDateTime = null;
+        let countdownInterval = null;
 
         function calculateUpgradeTime() {
             // Récupération des valeurs
@@ -223,10 +228,27 @@
 
             const errorDiv = document.getElementById('error');
             const resultDiv = document.getElementById('result');
+            const notifyButton = document.getElementById('notifyButton');
 
             // Réinitialiser les messages d'erreur
             errorDiv.textContent = '';
             resultDiv.classList.remove('show');
+            
+            // Annuler toute notification et compteur précédents
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+                notificationTimeout = null;
+            }
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            
+            // Réinitialiser le bouton de notification
+            notifyButton.style.display = 'none';
+            notifyButton.textContent = '🔔 Notify Me When Ready';
+            notifyButton.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            notifyButton.disabled = false;
 
             // Validation des entrées
             if (isNaN(currentProteins) || isNaN(requiredProteins) || isNaN(productionRate)) {
@@ -296,6 +318,54 @@
             
             // Afficher le bouton de notification
             document.getElementById('notifyButton').style.display = 'block';
+            
+            // Démarrer le compte à rebours en temps réel
+            startCountdown(upgradeDateTime);
+        }
+
+        function startCountdown(targetDate) {
+            const countdownElement = document.getElementById('countdown');
+            const countdownContainer = document.getElementById('countdownContainer');
+            
+            countdownContainer.style.display = 'flex';
+            
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = targetDate - now;
+                
+                if (timeLeft <= 0) {
+                    countdownElement.textContent = '✅ Ready Now!';
+                    countdownElement.style.color = '#27ae60';
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                        countdownInterval = null;
+                    }
+                    return;
+                }
+                
+                // Calculer le temps restant
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                let countdownText = '';
+                if (days > 0) {
+                    countdownText += `${days}d `;
+                }
+                if (hours > 0 || days > 0) {
+                    countdownText += `${hours}h `;
+                }
+                countdownText += `${minutes}m ${seconds}s`;
+                
+                countdownElement.textContent = countdownText;
+            }
+            
+            // Mettre à jour immédiatement
+            updateCountdown();
+            
+            // Puis mettre à jour chaque seconde
+            countdownInterval = setInterval(updateCountdown, 1000);
         }
 
         // Permettre le calcul avec la touche Entrée
@@ -355,7 +425,7 @@
 
             // Afficher un message de confirmation
             const errorDiv = document.getElementById('error');
-            errorDiv.textContent = '✅ You will be notified when your upgrade is ready!';
+            errorDiv.textContent = '✅ You will be notified when your upgrade is ready! (A new calculation will reset this notification)';
             errorDiv.style.color = '#27ae60';
 
             // Garder la page active (optionnel - pour information)
