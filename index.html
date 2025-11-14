@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protein Calculator - Last War</title>
+    <title>Last War Tools - Season 1</title>
     <style>
         * {
             margin: 0;
@@ -44,6 +44,58 @@
             font-size: 14px;
         }
 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .input-group {
             margin-bottom: 25px;
         }
@@ -63,6 +115,17 @@
             border-radius: 10px;
             font-size: 16px;
             transition: border-color 0.3s;
+        }
+
+        /* Cacher les flèches pour les inputs number */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
         input:focus {
@@ -163,78 +226,643 @@
             text-align: center;
             margin-bottom: 10px;
         }
+
+        .info-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .separator {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+            font-size: 20px;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .time-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-control-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .time-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .time-spinner-btn {
+            width: 40px;
+            height: 30px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0;
+            margin: 0;
+            outline: none;
+        }
+
+        .time-spinner-btn:hover {
+            background: #5568d3;
+            transform: scale(1.1);
+        }
+
+        .time-spinner-btn:active {
+            transform: scale(0.95);
+        }
+
+        .time-display {
+            width: 50px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 5px 0;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: text;
+            transition: all 0.2s;
+        }
+
+        .time-display:hover {
+            border-color: #667eea;
+            background: white;
+        }
+
+        .time-display:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .time-separator {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 0 5px;
+        }
+
+        .time-converter-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .time-converter-container .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .time-converter-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #667eea;
+            margin-top: 80px;
+        }
+
+        @media (max-width: 600px) {
+            .time-converter-container {
+                flex-direction: column;
+            }
+            
+            .time-converter-separator {
+                margin-top: 0;
+                margin-bottom: 10px;
+                transform: rotate(90deg);
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="icon">🧬</div>
-        <h1>Protein Calculator</h1>
-        <p class="subtitle">Last War - Saison 1</p>
+        <h1>Last War Tools</h1>
+        <p class="subtitle">Season 1 Helpers</p>
 
-        <div class="input-group">
-            <label for="currentProteins">Current Proteins:</label>
-            <input type="number" id="currentProteins" placeholder="e.g. 1500" min="0" step="1">
+        <!-- Onglets -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('protein')">🧬 Protein</button>
+            <button class="tab" onclick="switchTab('time')">🕐 Time</button>
         </div>
 
-        <div class="input-group">
-            <label for="requiredProteins">Proteins Required for Upgrade:</label>
-            <input type="number" id="requiredProteins" placeholder="e.g. 5000" min="0" step="1">
+        <!-- Contenu Protein Calculator -->
+        <div id="protein-tab" class="tab-content active">
+            <div class="input-group">
+                <label for="currentProteins">Current Proteins:</label>
+                <input type="text" id="currentProteins" placeholder="e.g. 1,500" inputmode="numeric">
+            </div>
+
+            <div class="input-group">
+                <label for="requiredProteins">Proteins Required for Upgrade:</label>
+                <input type="text" id="requiredProteins" placeholder="e.g. 5,000" inputmode="numeric">
+            </div>
+
+            <div class="input-group">
+                <label for="productionRate">Production per Hour:</label>
+                <input type="text" id="productionRate" placeholder="e.g. 250" inputmode="numeric">
+            </div>
+
+            <button onclick="calculateUpgradeTime()">🚀 Calculate</button>
+
+            <button id="notifyButton" onclick="setupNotification()" style="display: none; margin-top: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                🔔 Notify Me When Ready
+            </button>
+
+            <div id="result" class="result">
+                <h2>📊 Result</h2>
+                <div class="result-item">
+                    <span class="result-label">Missing Proteins:</span>
+                    <span class="result-value" id="missingProteins">-</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Wait Time:</span>
+                    <span class="result-value" id="waitTime">-</span>
+                </div>
+                <div class="result-item" id="countdownContainer" style="display: none;">
+                    <span class="result-label">Time Remaining:</span>
+                    <span class="result-value" id="countdown" style="color: #f5576c; font-weight: 700;">-</span>
+                </div>
+                <div class="result-item" style="flex-direction: column; gap: 10px; text-align: center;">
+                    <span class="result-label">Upgrade Available At:</span>
+                    <span class="time-value" id="upgradeTime">-</span>
+                </div>
+            </div>
+
+            <div id="error" class="error"></div>
         </div>
 
-        <div class="input-group">
-            <label for="productionRate">Production per Hour:</label>
-            <input type="number" id="productionRate" placeholder="e.g. 250" min="0" step="0.1">
+        <!-- Contenu Time Converter -->
+        <div id="time-tab" class="tab-content">
+            <div class="info-box">
+                <div class="info-label">Server Timezone</div>
+                <div class="info-value">GMT-2 (UTC-2)</div>
+            </div>
+
+            <div class="time-converter-container">
+                <div class="input-group">
+                    <label for="localTime">Your Local Time:</label>
+                    <input type="datetime-local" id="localTime" style="display: none;">
+                    <div class="time-picker">
+                        <div class="time-control">
+                            <div class="time-control-label">Hour</div>
+                            <div class="time-spinner">
+                                <button class="time-spinner-btn" onclick="adjustLocalTime('hour', 1)" tabindex="-1">▲</button>
+                                <div class="time-display" id="localHour" contenteditable="true" 
+                                     onblur="validateAndUpdateLocalTime('hour')" 
+                                     onkeypress="return handleTimeInput(event, 'hour')"
+                                     onkeydown="handleTimeKeydown(event, 'localHour')"
+                                     onfocus="selectAllText(event)">00</div>
+                                <button class="time-spinner-btn" onclick="adjustLocalTime('hour', -1)" tabindex="-1">▼</button>
+                            </div>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-control">
+                            <div class="time-control-label">Minute</div>
+                            <div class="time-spinner">
+                                <button class="time-spinner-btn" onclick="adjustLocalTime('minute', 1)" tabindex="-1">▲</button>
+                                <div class="time-display" id="localMinute" contenteditable="true" 
+                                     onblur="validateAndUpdateLocalTime('minute')" 
+                                     onkeypress="return handleTimeInput(event, 'minute')"
+                                     onkeydown="handleTimeKeydown(event, 'localMinute')"
+                                     onfocus="selectAllText(event)">00</div>
+                                <button class="time-spinner-btn" onclick="adjustLocalTime('minute', -1)" tabindex="-1">▼</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: #666; font-size: 14px;">
+                        <span id="localDateDisplay">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="time-converter-separator">⇄</div>
+
+                <div class="input-group">
+                    <label for="serverTime">Server Time (GMT-2):</label>
+                    <input type="datetime-local" id="serverTime" style="display: none;">
+                    <div class="time-picker">
+                        <div class="time-control">
+                            <div class="time-control-label">Hour</div>
+                            <div class="time-spinner">
+                                <button class="time-spinner-btn" onclick="adjustServerTime('hour', 1)" tabindex="-1">▲</button>
+                                <div class="time-display" id="serverHour" contenteditable="true" 
+                                     onblur="validateAndUpdateServerTime('hour')" 
+                                     onkeypress="return handleTimeInput(event, 'hour')"
+                                     onkeydown="handleTimeKeydown(event, 'serverHour')"
+                                     onfocus="selectAllText(event)">00</div>
+                                <button class="time-spinner-btn" onclick="adjustServerTime('hour', -1)" tabindex="-1">▼</button>
+                            </div>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-control">
+                            <div class="time-control-label">Minute</div>
+                            <div class="time-spinner">
+                                <button class="time-spinner-btn" onclick="adjustServerTime('minute', 1)" tabindex="-1">▲</button>
+                                <div class="time-display" id="serverMinute" contenteditable="true" 
+                                     onblur="validateAndUpdateServerTime('minute')" 
+                                     onkeypress="return handleTimeInput(event, 'minute')"
+                                     onkeydown="handleTimeKeydown(event, 'serverMinute')"
+                                     onfocus="selectAllText(event)">00</div>
+                                <button class="time-spinner-btn" onclick="adjustServerTime('minute', -1)" tabindex="-1">▼</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: #666; font-size: 14px;">
+                        <span id="serverDateDisplay">Loading...</span>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <button onclick="calculateUpgradeTime()">🚀 Calculate</button>
-
-        <button id="notifyButton" onclick="setupNotification()" style="display: none; margin-top: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-            🔔 Notify Me When Ready
-        </button>
-
-        <div id="result" class="result">
-            <h2>📊 Result</h2>
-            <div class="result-item">
-                <span class="result-label">Missing Proteins:</span>
-                <span class="result-value" id="missingProteins">-</span>
-            </div>
-            <div class="result-item">
-                <span class="result-label">Wait Time:</span>
-                <span class="result-value" id="waitTime">-</span>
-            </div>
-            <div class="result-item" id="countdownContainer" style="display: none;">
-                <span class="result-label">Time Remaining:</span>
-                <span class="result-value" id="countdown" style="color: #f5576c; font-weight: 700;">-</span>
-            </div>
-            <div class="result-item" style="flex-direction: column; gap: 10px; text-align: center;">
-                <span class="result-label">Upgrade Available At:</span>
-                <span class="time-value" id="upgradeTime">-</span>
-            </div>
-        </div>
-
-        <div id="error" class="error"></div>
     </div>
 
     <script>
+        // Variables globales pour le calculateur de protéines
         let notificationTimeout = null;
         let upgradeDateTime = null;
         let countdownInterval = null;
 
+        // Variables pour les contrôles de temps
+        let localTimeDate = new Date();
+        let serverTimeDate = new Date();
+
+        // Fonction pour changer d'onglet
+        function switchTab(tabName) {
+            // Cacher tous les contenus d'onglets
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Activer l'onglet sélectionné
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Fonction pour formater un nombre avec des virgules
+        function formatNumber(value) {
+            const cleaned = value.replace(/[^\d.]/g, '');
+            const parts = cleaned.split('.');
+            const integerPart = parts[0];
+            const decimalPart = parts[1];
+            const formatted = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return decimalPart !== undefined ? formatted + '.' + decimalPart : formatted;
+        }
+
+        // Fonction pour enlever le formatage et obtenir le nombre brut
+        function parseFormattedNumber(value) {
+            return parseFloat(value.replace(/,/g, ''));
+        }
+
+        // Ajouter le formatage automatique sur tous les inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = ['currentProteins', 'requiredProteins', 'productionRate'];
+            
+            inputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                
+                input.addEventListener('input', function(e) {
+                    const cursorPosition = this.selectionStart;
+                    const oldValue = this.value;
+                    const oldLength = oldValue.length;
+                    
+                    const formatted = formatNumber(this.value);
+                    this.value = formatted;
+                    
+                    const newLength = formatted.length;
+                    const diff = newLength - oldLength;
+                    this.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.value) {
+                        this.value = formatNumber(this.value);
+                    }
+                });
+            });
+
+            // Initialiser les contrôles de temps personnalisés
+            localTimeDate = new Date();
+            serverTimeDate = new Date();
+            
+            // Calculer l'heure du serveur (GMT-2)
+            const userOffset = localTimeDate.getTimezoneOffset() * 60000;
+            const serverOffset = 2 * 60 * 60000;
+            serverTimeDate = new Date(localTimeDate.getTime() + userOffset - serverOffset);
+            
+            updateLocalTimeDisplay();
+            updateServerTimeDisplay();
+        });
+
+        // Fonctions pour mettre à jour l'affichage des heures
+        function updateLocalTimeDisplay() {
+            const hours = String(localTimeDate.getHours()).padStart(2, '0');
+            const minutes = String(localTimeDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('localHour').textContent = hours;
+            document.getElementById('localMinute').textContent = minutes;
+            
+            const dateStr = localTimeDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            document.getElementById('localDateDisplay').textContent = dateStr;
+            
+            // Mettre à jour automatiquement le temps serveur
+            syncServerTimeFromLocal();
+        }
+
+        function updateServerTimeDisplay() {
+            const hours = String(serverTimeDate.getHours()).padStart(2, '0');
+            const minutes = String(serverTimeDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('serverHour').textContent = hours;
+            document.getElementById('serverMinute').textContent = minutes;
+            
+            const dateStr = serverTimeDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                timeZone: 'Etc/GMT+2'
+            });
+            document.getElementById('serverDateDisplay').textContent = dateStr;
+            
+            // Mettre à jour automatiquement le temps local
+            syncLocalTimeFromServer();
+        }
+
+        // Synchroniser le temps serveur depuis le temps local
+        function syncServerTimeFromLocal() {
+            const userOffset = localTimeDate.getTimezoneOffset() * 60000;
+            const serverOffset = 2 * 60 * 60000;
+            serverTimeDate = new Date(localTimeDate.getTime() + userOffset - serverOffset);
+            
+            const hours = String(serverTimeDate.getHours()).padStart(2, '0');
+            const minutes = String(serverTimeDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('serverHour').textContent = hours;
+            document.getElementById('serverMinute').textContent = minutes;
+            
+            const dateStr = serverTimeDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                timeZone: 'Etc/GMT+2'
+            });
+            document.getElementById('serverDateDisplay').textContent = dateStr;
+        }
+
+        // Synchroniser le temps local depuis le temps serveur
+        function syncLocalTimeFromServer() {
+            const userOffset = serverTimeDate.getTimezoneOffset() * 60000;
+            const serverOffset = 2 * 60 * 60000;
+            localTimeDate = new Date(serverTimeDate.getTime() - userOffset + serverOffset);
+            
+            const hours = String(localTimeDate.getHours()).padStart(2, '0');
+            const minutes = String(localTimeDate.getMinutes()).padStart(2, '0');
+            
+            document.getElementById('localHour').textContent = hours;
+            document.getElementById('localMinute').textContent = minutes;
+            
+            const dateStr = localTimeDate.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            document.getElementById('localDateDisplay').textContent = dateStr;
+        }
+
+        // Fonctions pour ajuster l'heure locale
+        function adjustLocalTime(unit, delta) {
+            if (unit === 'hour') {
+                localTimeDate.setHours(localTimeDate.getHours() + delta);
+            } else if (unit === 'minute') {
+                localTimeDate.setMinutes(localTimeDate.getMinutes() + delta);
+            }
+            updateLocalTimeDisplay();
+        }
+
+        // Fonctions pour ajuster l'heure serveur
+        function adjustServerTime(unit, delta) {
+            if (unit === 'hour') {
+                serverTimeDate.setHours(serverTimeDate.getHours() + delta);
+            } else if (unit === 'minute') {
+                serverTimeDate.setMinutes(serverTimeDate.getMinutes() + delta);
+            }
+            updateServerTimeDisplay();
+        }
+
+        // Fonctions pour gérer la saisie manuelle
+        function selectAllText(event) {
+            // Sélectionner tout le texte quand on clique sur le champ
+            const range = document.createRange();
+            range.selectNodeContents(event.target);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+
+        function handleTimeInput(event, unit) {
+            // Accepter seulement les chiffres
+            const char = String.fromCharCode(event.which);
+            if (!/^\d$/.test(char)) {
+                event.preventDefault();
+                return false;
+            }
+            
+            const element = event.target;
+            const currentText = element.textContent;
+            
+            // Si on a déjà 2 chiffres, remplacer tout
+            if (currentText.length >= 2) {
+                element.textContent = '';
+            }
+            
+            // Après avoir tapé, vérifier si on doit passer au champ suivant
+            setTimeout(() => {
+                const newText = element.textContent;
+                if (newText.length === 2) {
+                    // Trouver le champ suivant
+                    const elementId = element.id;
+                    let nextField = null;
+                    
+                    if (elementId === 'localHour') {
+                        nextField = document.getElementById('localMinute');
+                    } else if (elementId === 'localMinute') {
+                        nextField = document.getElementById('serverHour');
+                    } else if (elementId === 'serverHour') {
+                        nextField = document.getElementById('serverMinute');
+                    }
+                    
+                    if (nextField) {
+                        nextField.focus();
+                        // Sélectionner tout le texte
+                        const range = document.createRange();
+                        range.selectNodeContents(nextField);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                }
+            }, 0);
+            
+            return true;
+        }
+
+        function handleTimeKeydown(event, elementId) {
+            // Permettre Enter pour valider
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.target.blur();
+                return false;
+            }
+            
+            // Gérer Tab pour navigation personnalisée
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                
+                let nextField = null;
+                if (event.shiftKey) {
+                    // Tab arrière (Shift+Tab)
+                    if (elementId === 'serverMinute') {
+                        nextField = document.getElementById('serverHour');
+                    } else if (elementId === 'serverHour') {
+                        nextField = document.getElementById('localMinute');
+                    } else if (elementId === 'localMinute') {
+                        nextField = document.getElementById('localHour');
+                    }
+                } else {
+                    // Tab avant
+                    if (elementId === 'localHour') {
+                        nextField = document.getElementById('localMinute');
+                    } else if (elementId === 'localMinute') {
+                        nextField = document.getElementById('serverHour');
+                    } else if (elementId === 'serverHour') {
+                        nextField = document.getElementById('serverMinute');
+                    }
+                }
+                
+                if (nextField) {
+                    nextField.focus();
+                    // Sélectionner tout le texte
+                    const range = document.createRange();
+                    range.selectNodeContents(nextField);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+                
+                return false;
+            }
+            
+            // Permettre backspace, delete, arrow keys
+            if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                return true;
+            }
+            
+            // Sélectionner tout au focus (Ctrl+A ou Cmd+A)
+            if (event.key === 'a' && (event.ctrlKey || event.metaKey)) {
+                return true;
+            }
+        }
+
+        function validateAndUpdateLocalTime(unit) {
+            const element = unit === 'hour' ? document.getElementById('localHour') : document.getElementById('localMinute');
+            let value = parseInt(element.textContent) || 0;
+            
+            // Valider les limites
+            if (unit === 'hour') {
+                value = Math.max(0, Math.min(23, value));
+                localTimeDate.setHours(value);
+            } else if (unit === 'minute') {
+                value = Math.max(0, Math.min(59, value));
+                localTimeDate.setMinutes(value);
+            }
+            
+            updateLocalTimeDisplay();
+        }
+
+        function validateAndUpdateServerTime(unit) {
+            const element = unit === 'hour' ? document.getElementById('serverHour') : document.getElementById('serverMinute');
+            let value = parseInt(element.textContent) || 0;
+            
+            // Valider les limites
+            if (unit === 'hour') {
+                value = Math.max(0, Math.min(23, value));
+                serverTimeDate.setHours(value);
+            } else if (unit === 'minute') {
+                value = Math.max(0, Math.min(59, value));
+                serverTimeDate.setMinutes(value);
+            }
+            
+            updateServerTimeDisplay();
+        }
+
         function calculateUpgradeTime() {
-            // Récupération des valeurs
-            const currentProteins = parseFloat(document.getElementById('currentProteins').value);
-            const requiredProteins = parseFloat(document.getElementById('requiredProteins').value);
-            const productionRate = parseFloat(document.getElementById('productionRate').value);
+            const currentProteins = parseFormattedNumber(document.getElementById('currentProteins').value || '0');
+            const requiredProteins = parseFormattedNumber(document.getElementById('requiredProteins').value || '0');
+            const productionRate = parseFormattedNumber(document.getElementById('productionRate').value || '0');
 
             const errorDiv = document.getElementById('error');
             const resultDiv = document.getElementById('result');
             const notifyButton = document.getElementById('notifyButton');
 
-            // Réinitialiser les messages d'erreur
             errorDiv.textContent = '';
             resultDiv.classList.remove('show');
             
-            // Annuler toute notification et compteur précédents
             if (notificationTimeout) {
                 clearTimeout(notificationTimeout);
                 notificationTimeout = null;
@@ -244,13 +872,11 @@
                 countdownInterval = null;
             }
             
-            // Réinitialiser le bouton de notification
             notifyButton.style.display = 'none';
             notifyButton.textContent = '🔔 Notify Me When Ready';
             notifyButton.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
             notifyButton.disabled = false;
 
-            // Validation des entrées
             if (isNaN(currentProteins) || isNaN(requiredProteins) || isNaN(productionRate)) {
                 errorDiv.textContent = '⚠️ Please fill in all fields';
                 return;
@@ -266,24 +892,20 @@
                 return;
             }
 
-            // Vérifier si on a déjà assez de protéines
             if (currentProteins >= requiredProteins) {
                 errorDiv.textContent = '✅ You already have enough proteins for the upgrade!';
                 errorDiv.style.color = '#27ae60';
                 return;
             }
 
-            // Calculs
             const missingProteins = requiredProteins - currentProteins;
             const hoursNeeded = missingProteins / productionRate;
             const minutesNeeded = hoursNeeded * 60;
 
-            // Calcul de l'heure d'upgrade
             const now = new Date();
             const upgradeDate = new Date(now.getTime() + (minutesNeeded * 60 * 1000));
-            upgradeDateTime = upgradeDate; // Stocker pour les notifications
+            upgradeDateTime = upgradeDate;
 
-            // Formatage du temps d'attente
             const days = Math.floor(hoursNeeded / 24);
             const hours = Math.floor(hoursNeeded % 24);
             const minutes = Math.floor((hoursNeeded * 60) % 60);
@@ -297,7 +919,6 @@
             }
             waitTimeText += `${minutes} minute${minutes > 1 ? 's' : ''}`;
 
-            // Formatage de l'heure d'upgrade
             const options = {
                 weekday: 'long',
                 year: 'numeric',
@@ -309,17 +930,14 @@
             };
             const upgradeTimeText = upgradeDate.toLocaleDateString('en-US', options);
 
-            // Affichage des résultats
             document.getElementById('missingProteins').textContent = Math.ceil(missingProteins).toLocaleString('en-US');
             document.getElementById('waitTime').textContent = waitTimeText;
             document.getElementById('upgradeTime').textContent = upgradeTimeText;
 
             resultDiv.classList.add('show');
             
-            // Afficher le bouton de notification
             document.getElementById('notifyButton').style.display = 'block';
             
-            // Démarrer le compte à rebours en temps réel
             startCountdown(upgradeDateTime);
         }
 
@@ -343,7 +961,6 @@
                     return;
                 }
                 
-                // Calculer le temps restant
                 const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -361,33 +978,18 @@
                 countdownElement.textContent = countdownText;
             }
             
-            // Mettre à jour immédiatement
             updateCountdown();
-            
-            // Puis mettre à jour chaque seconde
             countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        // Permettre le calcul avec la touche Entrée
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    calculateUpgradeTime();
-                }
-            });
-        });
-
-        // Fonction pour demander la permission et configurer la notification
         async function setupNotification() {
             const notifyButton = document.getElementById('notifyButton');
             
-            // Vérifier si les notifications sont supportées
             if (!('Notification' in window)) {
                 alert('❌ Your browser does not support notifications. Please try with Chrome, Firefox, Safari, or Edge.');
                 return;
             }
 
-            // Demander la permission
             if (Notification.permission === 'default') {
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
@@ -399,7 +1001,6 @@
                 return;
             }
 
-            // Calculer le délai jusqu'à la notification
             const now = new Date();
             const timeUntilUpgrade = upgradeDateTime - now;
 
@@ -408,28 +1009,23 @@
                 return;
             }
 
-            // Annuler toute notification précédente
             if (notificationTimeout) {
                 clearTimeout(notificationTimeout);
             }
 
-            // Programmer la notification
             notificationTimeout = setTimeout(() => {
                 showNotification();
             }, timeUntilUpgrade);
 
-            // Mettre à jour le bouton
             notifyButton.textContent = '✅ Notification Set!';
             notifyButton.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
             notifyButton.disabled = true;
 
-            // Afficher un message de confirmation
             const errorDiv = document.getElementById('error');
             errorDiv.textContent = '✅ You will be notified when your upgrade is ready! (A new calculation will reset this notification)';
             errorDiv.style.color = '#27ae60';
 
-            // Garder la page active (optionnel - pour information)
-            if (timeUntilUpgrade > 300000) { // Plus de 5 minutes
+            if (timeUntilUpgrade > 300000) {
                 setTimeout(() => {
                     if (errorDiv.textContent.includes('notified')) {
                         errorDiv.textContent += ' ⚠️ Keep this tab open for the notification to work.';
@@ -438,38 +1034,39 @@
             }
         }
 
-        // Fonction pour afficher la notification
         function showNotification() {
             const notification = new Notification('🧬 Last War - Upgrade Ready!', {
                 body: 'Your protein production is complete! You can now upgrade your building.',
                 icon: '🧬',
                 badge: '🧬',
                 tag: 'lastwar-upgrade',
-                requireInteraction: true, // La notification reste affichée
-                vibrate: [200, 100, 200] // Vibration sur mobile
+                requireInteraction: true,
+                vibrate: [200, 100, 200]
             });
 
-            // Jouer un son (optionnel)
             try {
-                const audio = new Audio('data:audio/wav;base64,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');
-                audio.play().catch(() => {}); // Ignorer les erreurs de son
+                const audio = new Audio('data:audio/wav;base64,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');
+                audio.play().catch(() => {});
             } catch (e) {
                 // Ignorer les erreurs de son
             }
 
-            // Ouvrir la page si on clique sur la notification
             notification.onclick = function() {
                 window.focus();
                 notification.close();
             };
         }
 
-        // Vérifier si on revient sur la page (pour restaurer l'état)
-        window.addEventListener('load', () => {
-            if (Notification.permission === 'granted' && notificationTimeout) {
-                document.getElementById('notifyButton').textContent = '✅ Notification Set!';
-                document.getElementById('notifyButton').style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
-            }
+        // Permettre le calcul avec la touche Entrée
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    // Déterminer quelle fonction appeler selon l'onglet actif
+                    if (document.getElementById('protein-tab').classList.contains('active')) {
+                        calculateUpgradeTime();
+                    }
+                }
+            });
         });
     </script>
 </body>
